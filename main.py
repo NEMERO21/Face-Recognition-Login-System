@@ -5,7 +5,6 @@ import cv2
 import util
 from PIL import Image, ImageTk
 import os
-import face_recognition
 
 
 
@@ -42,7 +41,18 @@ class App:
         ret, frame = self.cap.read()
 
         self.most_recent_capture_arr = frame
-        img_ = cv2.cvtColor(self.most_recent_capture_arr, cv2.COLOR_BGR2RGB)
+
+        # detect faces using the cascade classifier
+        face_cascade = cv2.CascadeClassifier('C:\\Users\\srsin\\PycharmProjects\\pythonProject3\\haarcascade_frontalface_default.xml')
+
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+
+        # draw rectangles around the detected faces
+        for (x, y, w, h) in faces:
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+        img_ = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         self.most_recent_capture_pil = Image.fromarray(img_)
         imgtk = ImageTk.PhotoImage(image=self.most_recent_capture_pil)
         self._label.imgtk = imgtk
